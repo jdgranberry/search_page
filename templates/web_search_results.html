@@ -1,13 +1,13 @@
+{% from "macros.html" import web_result with context %}
 {% extends "layout.html" %}
 {% block content %}
   <h3> This is the search results page.</h3>
   <br>
-  <p>Search String: {{search_string}}</p>
-  <p>Top result: {{results_list[3]}}</p>
-  <p>Loop through the list:</p>
+  <p>Search String: {{query}}</p>
+  <p>Top {{ length }} Results:</p>
   <ul>
-    {% for n in results_list %}
-    <li>{{n}}</li>
+    {% for n in results %}
+        {{ web_result(n) }}
     {% endfor %}
   </ul>
   <h3> This is the end of my child template</h3>
