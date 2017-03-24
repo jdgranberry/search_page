@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h3> This is the Elasticsearch page.</h3>
+  <br>
+    <h1>{{ tagline }}</h1>
+    <form action="api{{ url_for('elasticsearch') }}" method="POST">
+        <input type="text" size="50px" name="elasticsearch">
+        <input type="submit" name="search-box" value="Send">
+    </form>
+{% endblock %}

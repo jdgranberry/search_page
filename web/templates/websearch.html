@@ -3,8 +3,8 @@
   <h3> This is the search page.</h3>
   <br>
     <h1>Enter some text</h1>
-    <form action="." method="POST">
-        <input type="text" size="50px" name="search terms">
+    <form action="api{{ url_for('websearch') }}" method="POST">
+        <input type="text" size="50px" name="websearch">
         <input type="submit" name="search-box" value="Send">
     </form>
 {% endblock %}
