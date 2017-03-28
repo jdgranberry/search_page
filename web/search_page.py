@@ -1,63 +1,108 @@
 from flask import Flask, render_template, request
-import configparser
-import urllib.parse
-import urllib.request
 import json
+import re
 
+from api import elasticsearch as es
+from api import websearch as ws
 
 app = Flask(__name__)
-
-NUM_SEARCH_RESULTS = 10         # Valid values are integers between 1 and 10, inclusive.
-
-# Pull in the API key to enable search
-config = configparser.ConfigParser()
-config.read('search_page.env')
-api_key = config['Google Search API']['Apikey']
-cx = config['Google Search API']['Cx']
 
 
 @app.route('/')
 def hello_world():
-    return render_template('search.html', my_string="Hello World!", my_list=[0, 1, 2, 3, 4, 5])
+    return render_template('search.html')
 
 
 @app.route("/home")
 def home():
-    return render_template('search.html', my_string="Wheeeee!", my_list=[0,1,2,3,4,5], title="Home")
+    return render_template('search.html', title="Home")
 
 
 @app.route("/about")
 def about():
-    return render_template('search.html', my_string="Wheeeee!", my_list=[0,1,2,3,4,5], title="About")
+    return render_template('search.html', title="About")
 
 
 @app.route("/contact")
 def contact():
-    return render_template('search.html', my_string="Wheeeee!", my_list=[0,1,2,3,4,5], title="Contact Us")
+    return render_template('search.html', title="Contact Us")
+
+
+@app.route("/search")
+def search():
+    return render_template('search.html', title="Contact Us")
 
 
 @app.route('/', methods=['POST'])
 def my_form_post():
     text = request.form['search terms']
 
-    params = {'key': api_key,
-              'cx': cx,
-              'q': text,
-              'num': NUM_SEARCH_RESULTS}
+    json_data = ws.search(text)
 
-    url = 'https://www.googleapis.com/customsearch/v1?%s' % urllib.parse.urlencode(params)
-    # with urllib.request.urlopen(url) as f:
-    #     json_data = json.loads(f.read().decode('utf-8'))
-
-    # DEBUG CODE
-    import os
-    with open(os.path.abspath('/home/jdgranberry/Dropbox/College/CS4315 - Intro Data Mining/assignment_3/search_page/web/test_search.json'), 'r') as testdata:
-        json_data = json.loads(testdata.read())
-
-    return render_template('web_search_results.html',
-                           query=text,
+    return render_template('results.html',
+                           search_type='web',                           query=text,
                            length=len(json_data['items']),
                            results=json_data['items'])
+
+
+@app.route("/elasticsearch")
+def elasticsearch():
+    tagline_ = es.get_info()
+
+    if tagline_ != es.ES_SERVER_DOWN:
+        return render_template('elasticsearch.html', title="About")
+    else:
+        return render_template('ESerror.html')
+
+
+@app.route("/v1/es", methods=["GET"])
+def es_search():
+    # Parse search parameters
+    args = request.args
+    search_type = args['match'] # TODO PREVENT SEARCH_TYPE INJECTION
+    query = args['query']
+
+
+    res = es.search(es.parse_query(search_type, query))
+    if search_type == es.ES_SEARCH_ALL:
+        return render_template('results.html',
+                               search_type='elastic',
+                               query=query,
+                               length=len(res),
+                               results=res)
+    elif search_type == es.ES_SEARCH_ID:
+        return render_template('single_result.html',
+                               artist=res[0]['Artist'],
+                               title=res[0]['Song'],
+                               year=res[0]['Year'],
+                               rank=res[0]['Rank'],
+                               lyrics=res[0]['Lyrics'])
+
+
+@app.route("/api/elasticsearch", methods=["POST"])
+def elasticsearch_post():
+    text = request.form['elasticsearch']
+
+    query = json.dumps({
+        "query": {
+            "match": {
+                "_all": {
+                    "query": text, "operator": "and"
+                }
+            }
+        }
+    })
+
+    res = es.search(query)
+
+    if res != es.ES_SERVER_DOWN:
+        return render_template('results.html',
+                               search_type='elastic',
+                               query=text,
+                               length=len(res),
+                               results=res)
+    else:
+        return render_template('ESerror.html')
 
 if __name__ == '__main__':
     app.run()

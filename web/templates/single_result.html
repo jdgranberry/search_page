@@ -1,0 +1,13 @@
+{% from "macros.html" import web_result with context %}
+{% from "macros.html" import es_result with context %}
+
+{% extends "layout.html" %}
+{% block content %}
+  <br>
+  <p>Song Title: {{ title }}</p>
+  <p>Song Artist: {{ artist }}</p>
+  <p>Song Year: {{ year }}</p>
+  <p>Song Rank: {{ rank }}</p>
+  <p>Song Lyrics: {{ lyrics }}</p>
+
+{% endblock %}

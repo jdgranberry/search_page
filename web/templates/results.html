@@ -1,0 +1,26 @@
+{% from "macros.html" import web_result with context %}
+{% from "macros.html" import es_result with context %}
+
+{% extends "layout.html" %}
+{% block content %}
+  <h3> This is the search results page.</h3>
+  <br>
+  <p>Search String: {{query}}</p>
+
+    {% if search_type=="web" %}
+        <p>Top {{ length }} Results:</p>
+        <ul>
+            {% for n in results %}
+                {{ web_result(n) }}
+            {% endfor %}
+        </ul>
+
+    {% else %}
+        <ul>
+            {% for n in results %}
+                {{ es_result(n) }}
+            {% endfor %}
+        </ul>
+    {%  endif %}
+
+{% endblock %}

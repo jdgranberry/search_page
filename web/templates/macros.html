@@ -1,17 +1,23 @@
 {% macro nav_link(endpoint, name) %}
 {% if request.endpoint.endswith(endpoint) %}
-  <li class="active"><a href="{{ url_for(endpoint) }}">{{name}}</a></li>
+    <li class="active"><a href="{{ url_for(endpoint) }}">{{name}}</a></li>
 {% else %}
-  <li><a href="{{ url_for(endpoint) }}">{{name}}</a></li>
+    <li><a href="{{ url_for(endpoint) }}">{{name}}</a></li>
 {% endif %}
 {% endmacro %}
 
 
 # Input: A dict representing a web search result from Google
 {% macro web_result(result) %}
-<li><a href={{ result['link'] }}> {{ result['title'] }} </a></li>
+    <li><a href={{ result['link'] }}> {{ result['title'] }} </a></li>
+        <ul>
+            <li>{{ result['link'] }}</li>
+            <li>{{ result['snippet'] }}</li>
+        </ul>
+{% endmacro %}
+
+{% macro es_result(result) %}
     <ul>
-        <li>{{ result['link'] }}</li>
-        <li>{{ result['snippet'] }}</li>
+        <li>Artist: {{ result['Artist'] }} Song: {{ result['Song'] }}</li>
     </ul>
 {% endmacro %}

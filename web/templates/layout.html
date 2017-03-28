@@ -16,61 +16,25 @@
     </style>
   </head>
   <body>
-      <nav class="navbar navbar-inverse" role="navigation">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="/">Jinja!</a>
-        </div>
-
+    <nav class="navbar navbar-inverse" role="navigation">
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
             {{ nav_link('home', 'Home') }}
-            {{ nav_link('about', 'About') }}
             {{ nav_link('contact', 'Contact Us') }}
+            {{ nav_link('search', 'Web Search') }}
+            {{ nav_link('elasticsearch', 'Elasticsearch') }}
           </ul>
-          <form class="navbar-form navbar-left" role="search">
-            <div class="form-group">
-              <input type="text" class="form-control" placeholder="Search">
-            </div>
-            <button type="submit" class="btn btn-default">Submit</button>
-          </form>
           <ul class="nav navbar-nav navbar-right">
             <li><a href="https://github.com/jdgranberry">jdgranberry</a></li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li><a href="#">Action</a></li>
-                <li><a href="#">Another action</a></li>
-                <li><a href="#">Something else here</a></li>
-                <li class="divider"></li>
-                <li><a href="#">Separated link</a></li>
-              </ul>
-            </li>
           </ul>
-        </div><!-- /.navbar-collapse -->
-      </div><!-- /.container-fluid -->
+        </div><!-- /.bs-example-navbar-collapse-1 -->
     </nav>
     <div class="container">
-      <h2>This is part of my base template</h2>
       <br>
       {% block content %}{% endblock %}
       <br>
-      <h2>This is part of my base template</h2>
     </div>
-    <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
-    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-  <div class="footer">
-  {% block footer %}
-    Watch! This will be added to my base and child templates using the super powerful super block!
-    <br>
-    <br>
-  {% endblock %}
-</div>
+        <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+        <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
   </body>
 </html>
