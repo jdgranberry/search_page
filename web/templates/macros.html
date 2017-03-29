@@ -18,6 +18,7 @@
 
 {% macro es_result(result) %}
     <ul>
-        <li>Artist: {{ result['Artist'] }} Song: {{ result['Song'] }}</li>
+        <a href= "{{ url_for('es_search', query=result['Id'], match='_id') }}">
+        <li>Artist: {{ result['Artist'] }} Song: {{ result['Song'] }}</li> </a>
     </ul>
 {% endmacro %}

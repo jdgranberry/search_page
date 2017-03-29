@@ -26,15 +26,20 @@ def get_info():
 
 
 def parse_query(search_type, text):
+    search_type_ = search_type
+
     if search_type == ES_SEARCH_ALL:
         text_ = {"query": text, "operator": "and"}
-    else:   # search_type == ES_SEARCH_ID
+    elif search_type == ES_SEARCH_ID:
         text_ = {"query": text}
+    else:
+        search_type_ = ES_SEARCH_ALL
+        text_ = {"query": text, "operator": "and"}
 
     json_query = json.dumps({
         "query": {
             "match": {
-                search_type: text_
+                search_type_: text_
             }
         }
     })
@@ -52,7 +57,8 @@ def search(json_query):
                             'Song': hit['_source']['Song'],
                             'Year': hit['_source']['Year'],
                             'Rank': hit['_source']['Rank'],
-                            'Lyrics': hit['_source']['Lyrics']})
+                            'Lyrics': hit['_source']['Lyrics'],
+                            'Id': hit['_id']})
 
         # DEBUG
         from pprint import pprint
