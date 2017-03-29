@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, Markup
+import markdown
 import json
 
 from api import elasticsearch as es
@@ -8,27 +9,43 @@ app = Flask(__name__)
 
 
 @app.route('/')
-def homepage():
-    return render_template('search.html', title="Home")
+def index():
+    return render_template('index.html', title="Home")
 
 
 @app.route("/home")
 def home():
-    return render_template('search.html', title="Home")
+    return render_template('index.html', title="Home")
+
+
+@app.route("/about")
+def about():
+    import os
+
+    # Load `../README.md` into a string for displaying with markdown.
+    file_location = os.path.dirname(os.path.realpath(__file__))
+    readme_path = os.path.abspath(os.path.join(file_location, '..', 'README.md'))
+
+    with open(readme_path, 'r') as readme:
+        content = readme.read()
+
+    content_md = Markup(markdown.markdown(content))
+
+    return render_template('about.html', **locals())
 
 
 @app.route("/contact")
 def contact():
-    return render_template('search.html', title="Contact Us")
+    return render_template('home.html', title="Contact Me")
 
 
-@app.route("/search")
-def search():
-    return render_template('search.html', title="Contact Us")
-
-
-@app.route('/websearch', methods=['POST'])
+@app.route('/websearch', methods=['GET'])
 def websearch():
+    return render_template('websearch.html', title="Google Search")
+
+
+@app.route('/v1/ws', methods=['POST'])
+def ws_post():
     text = request.form['search terms']
 
     json_data = ws.search(text)
@@ -43,16 +60,16 @@ def websearch():
 
 @app.route("/elasticsearch")
 def elasticsearch():
-    tagline_ = es.get_info()
+    tagline_ = es.get_status()
 
     if tagline_ != es.ES_SERVER_DOWN:
-        return render_template('elasticsearch.html', title="Elasticsearch")
+        return render_template('elasticsearch.html', status="AVAILABLE", title="Elasticsearch")
     else:
         return render_template('ESerror.html')
 
 
 @app.route("/v1/es", methods=["GET"])
-def es_search():
+def es_get():
     # Parse search parameters
     args = request.args
     search_type = args['match']
@@ -79,32 +96,6 @@ def es_search():
                                lyrics=res[0]['Lyrics'],
                                title="Lyrics: {} - {}".format(res[0]['Song'], res[0]['Artist']))
 
-
-@app.route("/api/elasticsearch", methods=["POST"])
-def elasticsearch_post():
-    text = request.form['elasticsearch']
-
-    query = json.dumps({
-        "query": {
-            "match": {
-                "_all": {
-                    "query": text, "operator": "and"
-                }
-            }
-        }
-    })
-
-    res = es.search(query)
-
-    if res != es.ES_SERVER_DOWN:
-        return render_template('results.html',
-                               search_type='elastic',
-                               query=text,
-                               length=len(res),
-                               results=res,
-                               title="Search Results")
-    else:
-        return render_template('ESerror.html')
 
 if __name__ == '__main__':
     app.run()

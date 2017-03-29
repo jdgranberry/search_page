@@ -22,5 +22,4 @@ def search(query):
     with urllib.request.urlopen(url) as f:
         json_data = json.loads(f.read().decode('utf-8'))
 
-
     return json_data

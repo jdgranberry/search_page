@@ -2,9 +2,10 @@
 {% block content %}
   <h3> This is the Elasticsearch page.</h3>
   <br>
-    <h1>{{ tagline }}</h1>
-    <form action="api{{ url_for('elasticsearch') }}" method="POST">
-        <input type="text" size="50px" name="elasticsearch">
-        <input type="submit" name="search-box" value="Send">
+    <h4>Elasticsearch server is <span style="color:green;">{{ status }}.</span></h4>
+    <form action="{{ url_for('es_get', match='_all') }}" method="GET">
+        <input type="hidden" name="match" value="_all">
+        <input type="text" size="50px" name="query">
+        <input type="submit">
     </form>
 {% endblock %}

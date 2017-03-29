@@ -10,6 +10,8 @@ es_user = config['Elasticsearch Server']['User']
 es_pass = config['Elasticsearch Server']['Pass']
 
 ES_INDEX = 'song_lyrics'
+
+ES_SERVER_UP = "ES_SERVER_UP"
 ES_SERVER_DOWN = "ES_SERVER_DOWN"
 ES_SERVER_SEARCH_ERROR = "ES_SERVER_SEARCH_ERROR"
 ES_SEARCH_ALL = '_all'
@@ -18,9 +20,11 @@ ES_SEARCH_ID = '_id'
 es = Elasticsearch([es_host], http_auth=(es_user, es_pass), port=es_port)
 
 
-def get_info():
+def get_status():
     try:
-        return str(es.info()['tagline'])
+        # Try a simple request to the server
+        es.info()
+        return ES_SERVER_UP
     except exceptions.ConnectionError:
         return ES_SERVER_DOWN
 
@@ -59,12 +63,7 @@ def search(json_query):
                             'Rank': hit['_source']['Rank'],
                             'Lyrics': hit['_source']['Lyrics'],
                             'Id': hit['_id']})
-
-        # DEBUG
-        from pprint import pprint
-        with open('/home/jdgranberry/Dropbox/College/CS4315 - Intro Data Mining/assignment_3/search_page/web/api/debug.txt', 'w+') as dbg:
-            pprint(results, stream=dbg)
-
         return results
+
     except exceptions.ConnectionError:
         return ES_SERVER_DOWN
