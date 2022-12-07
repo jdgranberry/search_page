@@ -1,4 +1,4 @@
-certifi==2017.1.23
+certifi==2022.12.7
 click==6.7
 elasticsearch==5.2.0
 Flask==0.12
